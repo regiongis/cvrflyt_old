@@ -11,6 +11,7 @@ import moment from 'moment';
 import axios from 'axios';
 import {hot} from 'react-hot-loader';
 import Map from './Map.js';
+import GridData from './Grid.js';
 import './App.css';
 
 
@@ -86,7 +87,7 @@ class App extends Component{
                         </Tabs>
                     </AppBar>
                     {value === 0 && <TabContainer><Map data={this.state.data}/></TabContainer>} 
-                    {value === 1 && <TabContainer>Tabel</TabContainer>}
+                    {value === 1 && <TabContainer><GridData/></TabContainer>}
                 </div>
             </div>
         );

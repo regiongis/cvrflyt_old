@@ -4,13 +4,13 @@ import axios from 'axios';
 
 const style = {
     width: "100%",
-    height: "400px"
+    height: "600px"
 };
 
 var geojsonLayer;
 var map;
 
-class Map extends React.Component {
+class MapData extends React.Component {
     constructor(props){
         super(props);// console.log(props.data);
         this.state = {
@@ -150,4 +150,4 @@ class Map extends React.Component {
     }
 }
 
-export default Map;
+export default MapData;

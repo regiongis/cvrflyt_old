@@ -4,11 +4,13 @@ import {
     SortingState,
     IntegratedSorting,
     FilteringState,
-    IntegratedFiltering
+    IntegratedFiltering,
+    DataTypeProvider
   } from '@devexpress/dx-react-grid';
 import { 
     Grid, 
     Table, 
+    VirtualTable,
     TableHeaderRow,
     TableFilterRow,
     TableColumnReordering,
@@ -16,13 +18,57 @@ import {
     } from '@devexpress/dx-react-grid-material-ui';
 import axios from 'axios';
 
+const getColor = (status) => { //console.log('status = ',status);
+    if(status === 'Fraflytter') return 'orange';
+    else if(status === 'Tilflytter') return 'green';
+    else if(status === 'Nystartet') return 'blue';
+    else if(status === 'Ophørt') return 'red';
+    else return 'blue';
+};
+
+const StatusFormatter = ({value}) =>{
+    let color = getColor(value);
+    return (
+        <b style={{ color: color}}>
+            {value}
+        </b>
+    );
+}
+
+const StatusTypeProvider = props => (
+    <DataTypeProvider 
+        formatterComponent={StatusFormatter}
+        {...props}
+    />
+);
+const HighlightedCell = ({ value, style }) => {
+    let color = getColor(value); console.log(color);
+   return (<Table.Cell
+        style={{
+            backgroundColor: color, 
+        }}
+    >
+
+    </Table.Cell>);
+};
+
+const getRowId = row => row.id;
+
+const Cell = (props) => {
+    const { column } = props; //console.log('column name == ', column.name);
+    if(column.name === 'status'){
+        return <HighlightedCell {...props} />;
+    }
+    return <Table.Cell {...props} />;
+};
 
 class GridData extends React.PureComponent{
     constructor(props){
         super(props);
         this.state = {
             rows: [],
-            sorting: [{ columnName: 'hovedbranche', direction: 'desc' }]
+            sorting: [{ columnName: 'hovedbranche', direction: 'desc' }],
+            statusColumns: ['status']
         };
         this.changeSorting = sorting => this.setState({ sorting });
     }
@@ -33,6 +79,7 @@ class GridData extends React.PureComponent{
                 this.setState({rows : res.data.features.map(feature => feature.properties)});
             });
     }
+
 
     render(){
         const cols = [
@@ -68,18 +115,25 @@ class GridData extends React.PureComponent{
         ];
 
 
-        const { rows, sorting } = this.state;
+        const { rows, sorting, statusColumns } = this.state;
       return(
-          <Paper>
+          <Paper style={{height: '600px'}}>
             <Grid
                 rows={rows}
                 columns={cols}
+                getRowId={getRowId}
+                style={{ height: '100%'}}
             >
                 <FilteringState defaultFilters={[]} />
                 <IntegratedFiltering />
                 <SortingState defaultSorting={[{ columnName: 'status', direction: 'desc' }]} />
                 <IntegratedSorting />
-                <Table/>
+                <StatusTypeProvider 
+                    for={statusColumns}
+                />
+                <VirtualTable
+                    height="auto"
+                />
                 <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
                 <TableHeaderRow showSortingControls />
                 <TableFilterRow />

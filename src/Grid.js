@@ -52,7 +52,11 @@ const HighlightedCell = ({ value, style }) => {
     </Table.Cell>);
 };
 
-const getRowId = row => row.id;
+const getRowId = row => {
+  //  console.log('row id => ',row['cvr-nummer']);
+    return row['cvr-nummer'];
+
+};
 
 const Cell = (props) => {
     const { column } = props; //console.log('column name == ', column.name);
@@ -67,6 +71,7 @@ class GridData extends React.PureComponent{
         super(props);
         this.state = {
             rows: [],
+            data: [],
             sorting: [{ columnName: 'hovedbranche', direction: 'desc' }],
             statusColumns: ['status']
         };
@@ -74,14 +79,27 @@ class GridData extends React.PureComponent{
     }
 
     componentDidMount(){
-        axios.get("test.json")
+        console.log('data from props');
+ //       console.log(this.props.data);
+     //   const data = this.props.data;
+       // this.setState({rows : data.map(feature => feature.properties)});
+       
+   /*     axios.get("test.json")
             .then(res =>{
                 this.setState({rows : res.data.features.map(feature => feature.properties)});
             });
+     */   
+    }
+
+    componentDidUpdate(){
+
     }
 
 
+
+
     render(){
+
         const cols = [
             {name:'status',title:'Status'},
             {name:'cvr-nummer',title:'CVR nummer'},
@@ -115,7 +133,9 @@ class GridData extends React.PureComponent{
         ];
 
 
-        const { rows, sorting, statusColumns } = this.state;
+        const { sorting, statusColumns } = this.state;
+        const rows = this.props.data.map(feature => feature.properties);
+       // console.log(rows);
       return(
           <Paper style={{height: '600px'}}>
             <Grid

@@ -16,6 +16,7 @@ class MapData extends React.Component {
         this.state = {
             data: {}
         }
+       
     }
 
     renderMap(){
@@ -32,7 +33,7 @@ class MapData extends React.Component {
          ] 
        });
     }  
-    renderFeatures(data){
+    renderFeatures(data){ //console.log('renderfeatures'); console.log(data);
       var costumIcon = function(status) {
         function selector(status) {
           switch (status) {
@@ -62,11 +63,11 @@ class MapData extends React.Component {
       }
 
 
-      function onEachFeature(feature, layer) { //console.log(layer);
+      function onEachFeature(feature, layer) { 
         layer.bindPopup("<strong>" + feature.properties.status + '</strong></br><hr>' + feature.properties.navn + '</br><a href="https://datacvr.virk.dk/data/visenhed?enhedstype=produktionsenhed&id=' + feature.properties["p-nummer"] + '" target="_blank">Se mere her</a>');
       }
       
-      geojsonLayer = L.geoJSON(data.features, {
+      geojsonLayer = L.geoJSON(data, {
         onEachFeature: onEachFeature,
         pointToLayer: function (feature, latlng) {
             //return L.circleMarker(latlng, geojsonMarkerOptions);
@@ -80,8 +81,14 @@ class MapData extends React.Component {
     componentDidMount(){
        // let data = this.props.data.features;
        // console.log(data);
+       console.log('filtered data');
+       console.log(this.props.data)
        this.renderMap();
-        
+       if(this.props.data.length > 0){
+        this.renderFeatures(this.props.data);
+       }
+      // this.renderFeatures(this.props.data);
+       /* 
         let that = this;
         axios.get("test.json")
             .then(res =>{
@@ -93,6 +100,17 @@ class MapData extends React.Component {
           
               
             });
+      */      
+    }
+
+    componentDidUpdate(){ console.log('componentdidupdate');
+      const { data } = this.props;
+      //this.renderFeatures(data);
+      if(this.props.data.length > 0){ 
+        this.renderFeatures(this.props.data);
+       }else{
+         console.log('props empty');
+       }
     }
 
     renderMarkers(data){

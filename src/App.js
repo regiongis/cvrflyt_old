@@ -320,7 +320,15 @@ class App extends Component{
                         {value === 0 && <TabContainer><MapData data={this.state.data}/></TabContainer>} 
                         {value === 1 && <TabContainer><GridData data={this.state.data} /></TabContainer>}
                     </div>
-                    <FormGroup row>
+                  
+                </div>
+            </MuiThemeProvider>
+        );
+    }
+}
+/*
+
+  <FormGroup row>
                         <FormControlLabel 
                             control={
                                 <Switch
@@ -366,12 +374,8 @@ class App extends Component{
                             label="Nystartet"
                         />
                     </FormGroup>
-                </div>
-            </MuiThemeProvider>
-        );
-    }
-}
 
+*/
 export default hot(module)(App);
 
 /*

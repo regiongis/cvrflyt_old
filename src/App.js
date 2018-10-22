@@ -9,15 +9,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-//import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import 'moment/locale/da';
 import Select from '@material-ui/core/Select';
-import Menuitem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
 import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import Map from '@material-ui/icons/Map';
@@ -25,10 +22,10 @@ import TableChart from '@material-ui/icons/TableChart';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import DatePicker from 'material-ui-pickers/DatePicker';
-import axios from 'axios';
 import {hot} from 'react-hot-loader';
 import MapData from './Map.js';
 import GridData from './Grid.js';
+import { CSVLink } from 'react-csv';
 import './App.css';
 import classnames from 'classnames';
 
@@ -73,6 +70,7 @@ function TabContainer(props){
     );
 }
 
+
 TabContainer.propTypes = {
     children: PropTypes.node.isRequired
 };
@@ -91,7 +89,8 @@ class App extends Component{
             Fraflytter: true,
             Tilflytter: true,
             Ophørt: true,
-            Nystartet:true
+            Nystartet:true,
+            csvData: []
         }
 
         this.theData = {};
@@ -100,7 +99,23 @@ class App extends Component{
         this.handleEnd = this.handleEnd.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
         this.handleChecked = this.handleChecked.bind(this);
+    
     }
+
+    getCsv(){
+        const csv = this.state.data.map(feature => {
+            let s = feature.properties['fuldt ansvarlige deltagere'];
+            if(s !== null && s.length > 0){
+                feature.properties['fuldt ansvarlige deltagere'] = s.replace(/\"/g,'');
+            }
+            return feature.properties;
+        
+        });
+        console.log(csv);
+        return csv;
+    }
+
+    
 
     filterData(feature){console.log(feature);
         const {data, Fraflytter, Tilflytter, Ophørt, Nystartet }= this.state;
@@ -114,10 +129,22 @@ class App extends Component{
     }
 
     getKommuner(){
-
+        let komUrl = "https://drayton.mapcentia.com/api/v1/sql/ballerup?q=select right(komkode, 3)::int komkode, "
+                        +"komnavn from data.kommune group by komkode, komnavn order by komnavn";
+        let that = this;
+        $.ajax({
+            url: komUrl,
+            type: 'GET',
+            dataType: 'jsonp',
+            success: function(res){
+                let koms = res.features.map(feature => feature.properties);
+                that.setState((preveState) => ({kommuner: koms}));
+            }
+        });
     }
 
-    getData(komkode,startDate, endDate){
+    getData(komkode,startDate, endDate){ 
+        this.setState((preveState) => ({csvData: []}));
         let that = this;
         let dataUrl = "https://drayton.mapcentia.com/api/v1/sql/ballerup?q=SELECT * FROM cvr.flyt_fad("  
                     + komkode + ",'" + startDate + "','" + endDate + "')&srs=4326";
@@ -127,7 +154,9 @@ class App extends Component{
             dataType: 'jsonp',
             success: function(res){
                 that.setState((preveState) => ({data: res.features}));
-               // console.log(res.features);
+                // console.log(res.features);
+                let csv = res.features.map(feature => feature.properties);
+                that.setState((prevState) => ({csvData: csv}));
             }
         });
     }
@@ -171,46 +200,10 @@ class App extends Component{
     }
 
     componentDidMount(){
-        console.log(moment().format('Y')+'-'+ moment().format('M') + '-01');
         let that = this;
         let { komkode, startDate, endDate } = this.state;
-        let dataUrl = "https://drayton.mapcentia.com/api/v1/sql/ballerup?q=SELECT * FROM cvr.flyt_fad("  
-                    + komkode + ",'" + startDate + "','" + endDate + "')&srs=4326";
-        let komUrl = "https://drayton.mapcentia.com/api/v1/sql/ballerup?q=select right(komkode, 3)::int komkode, "
-                        +"komnavn from data.kommune group by komkode, komnavn order by komnavn"
-      /*  axios.get(dataUrl)
-            .then(res =>{
-                that.setState((preveState) => ({data: res.data.features})); //console.log(res.data);
-                that.setState((preveState) => ({filteredData: res.data.features}));
-                this.theData = res.data;
-            });
-
-        axios.get(komUrl)
-            .then(res =>{
-                let koms = res.data.features.map(feature => feature.properties);
-                this.setState((proevState) => ({kommuner : koms}));
-            });
-        */
-       $.ajax({
-           url: dataUrl,
-           type: 'GET',
-           dataType: 'jsonp',
-           success: function(res){ console.log(res.features);
-               that.setState((preveState) => ({data: res.features}));
-             // console.log(res.features);
-           }
-       });
-
-       $.ajax({
-        url: komUrl,
-        type: 'GET',
-        dataType: 'jsonp',
-        success: function(res){
-            let koms = res.features.map(feature => feature.properties);
-            that.setState((preveState) => ({kommuner: koms}));
-           // console.log(res.features);
-        }
-    });
+        this.getData(komkode, startDate, endDate);
+        this.getKommuner();
     }
 
     handleChange(event, value){
@@ -238,6 +231,7 @@ class App extends Component{
     render(){
         const { value, startDate, endDate, kommuner } = this.state;
         const locale = 'da';
+        const _csvData = this.getCsv();
         return (
             <MuiThemeProvider theme={theme}>
             
@@ -295,10 +289,22 @@ class App extends Component{
                                             />   
                                         </MuiPickersUtilsProvider>       
                                     </Grid>
+                                    
                                     <Grid item xs={2}>
-                                        <IconButton arial-label="csv">
-                                        <CloudDownload/>
-                                        </IconButton>       
+                                        {
+                                            this.state.csvData.length > 0 &&
+                                             (<CSVLink 
+                                                    data={this.state.csvData}
+                                                    filename={"my-file.csv"}
+                                                    target="_blank"
+                                                >
+                                                <CloudDownload/>
+                                                </CSVLink>)    
+
+                                        }
+                                       
+                                          
+
                                     </Grid>
                                 </Grid>
                             </Toolbar>
@@ -371,8 +377,7 @@ export default hot(module)(App);
 /*
 TODO: 
  1. Implement filters: use switches or dropdown with checkboxes.
- 3. use real ajax data
- 2. move data in a common store.
+ 
 
  Next => use filterData, til show only checked values
 

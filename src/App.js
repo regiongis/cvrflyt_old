@@ -19,12 +19,14 @@ import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import Map from '@material-ui/icons/Map';
 import TableChart from '@material-ui/icons/TableChart';
+import BarChart from '@material-ui/icons/BarChart';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import DatePicker from 'material-ui-pickers/DatePicker';
 import {hot} from 'react-hot-loader';
 import MapData from './Map.js';
 import GridData from './Grid.js';
+import GraphData from './Graph.js';
 import { CSVLink } from 'react-csv';
 import './App.css';
 import classnames from 'classnames';
@@ -316,70 +318,74 @@ class App extends Component{
                                 >
                                 <Tab icon={<Map/>}/>
                                 <Tab icon={<TableChart/>}/>
+                                <Tab icon={<BarChart/>}/>
                             </Tabs>
                         {value === 0 && <TabContainer><MapData data={this.state.data}/></TabContainer>} 
                         {value === 1 && <TabContainer><GridData data={this.state.data} /></TabContainer>}
+                        {value === 2 && <TabContainer><GraphData data={this.state.data} /></TabContainer>}
                     </div>
                   
                 </div>
+                        <FormGroup row>
+                            <FormControlLabel 
+                                control={
+                                    <Switch
+                                        checked={this.state.Fraflytter}
+                                        onChange={this.handleChecked}
+                                        color="primary"
+                                        value="Fraflytter"
+                                    />
+                                }
+                                label="Fraflyttet"
+                            />
+                            <FormControlLabel 
+                                control={
+                                    <Switch
+                                        checked={this.state.Tilflytter}
+                                        onChange={this.handleChecked}
+                                        color="primary"
+                                        value="Tilflytter"
+                                    />
+                                }
+                                label="Tilflyttet"
+                            />
+                            <FormControlLabel 
+                                control={
+                                    <Switch
+                                        checked={this.state.Ophørt}
+                                        onChange={this.handleChecked}
+                                        color="primary"
+                                        value="Ophørt"
+                                    />
+                                }
+                                label="Ophørt"
+                            />
+                            <FormControlLabel 
+                                control={
+                                    <Switch
+                                        checked={this.state.Nystartet}
+                                        onChange={this.handleChecked}
+                                        color="primary"
+                                        value="Nystartet"
+                                    />
+                                }
+                                label="Nystartet"
+                            />
+                        </FormGroup>
             </MuiThemeProvider>
         );
     }
 }
 /*
 
-  <FormGroup row>
-                        <FormControlLabel 
-                            control={
-                                <Switch
-                                    checked={this.state.Fraflytter}
-                                    onChange={this.handleChecked}
-                                    color="primary"
-                                    value="Fraflytter"
-                                />
-                            }
-                            label="Fraflyttet"
-                        />
-                        <FormControlLabel 
-                            control={
-                                <Switch
-                                    checked={this.state.Tilflytter}
-                                    onChange={this.handleChecked}
-                                    color="primary"
-                                    value="Tilflytter"
-                                />
-                            }
-                            label="Tilflyttet"
-                        />
-                        <FormControlLabel 
-                            control={
-                                <Switch
-                                    checked={this.state.Ophørt}
-                                    onChange={this.handleChecked}
-                                    color="primary"
-                                    value="Ophørt"
-                                />
-                            }
-                            label="Ophørt"
-                        />
-                        <FormControlLabel 
-                            control={
-                                <Switch
-                                    checked={this.state.Nystartet}
-                                    onChange={this.handleChecked}
-                                    color="primary"
-                                    value="Nystartet"
-                                />
-                            }
-                            label="Nystartet"
-                        />
-                    </FormGroup>
 
 */
 export default hot(module)(App);
 
 /*
 TODO: 
+
+ First do the graph data with Victory library!!! then filters!!!!
  1. Implement filters: use switches or dropdown with checkboxes.
  
 

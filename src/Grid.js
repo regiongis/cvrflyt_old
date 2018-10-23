@@ -54,7 +54,7 @@ const HighlightedCell = ({ value, style }) => {
 
 const getRowId = row => {
   //  console.log('row id => ',row['cvr-nummer']);
-    return row['cvr-nummer'];
+    return row['keyIndex'];
 
 };
 
@@ -79,16 +79,7 @@ class GridData extends React.PureComponent{
     }
 
     componentDidMount(){
-        console.log('data from props');
- //       console.log(this.props.data);
-     //   const data = this.props.data;
-       // this.setState({rows : data.map(feature => feature.properties)});
        
-   /*     axios.get("test.json")
-            .then(res =>{
-                this.setState({rows : res.data.features.map(feature => feature.properties)});
-            });
-     */   
     }
 
     componentDidUpdate(){
@@ -134,7 +125,12 @@ class GridData extends React.PureComponent{
 
 
         const { sorting, statusColumns } = this.state;
-        const rows = this.props.data.map(feature => feature.properties);
+        const rows = this.props.data.map((feature, index) => {
+            feature.properties['keyIndex'] = index;
+            return feature.properties;
+        
+        });
+        console.log(rows);
        // console.log(rows);
       return(
           <Paper style={{height: '600px'}}>

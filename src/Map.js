@@ -79,28 +79,11 @@ class MapData extends React.Component {
       
     }
     componentDidMount(){
-       // let data = this.props.data.features;
-       // console.log(data);
-       console.log('filtered data');
-       console.log(this.props.data)
        this.renderMap();
        if(this.props.data.length > 0){
         this.renderFeatures(this.props.data);
        }
-      // this.renderFeatures(this.props.data);
-       /* 
-        let that = this;
-        axios.get("test.json")
-            .then(res =>{
-                that.setState((preveState) => ({data: res.data})); //console.log(res.data);
-              //  this.renderMarkers(res.data.features);
-              this.renderFeatures(res.data);
-              
-
-          
-              
-            });
-      */      
+       
     }
 
     componentDidUpdate(){ console.log('componentdidupdate');

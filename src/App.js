@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -9,6 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress'; 
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import 'moment/locale/da';
@@ -52,6 +54,9 @@ const styles = theme => ({
     },
     menu: {
         width: 300,
+    },
+    progress: {
+        margin: theme.spacing.unit * 2
     }
 });
 
@@ -92,7 +97,9 @@ class App extends Component{
             Tilflytter: true,
             Ophørt: true,
             Nystartet:true,
-            csvData: []
+            csvData: [],
+            loading: true,
+            completed: 0
         }
 
         this.theData = {};
@@ -101,7 +108,14 @@ class App extends Component{
         this.handleEnd = this.handleEnd.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
         this.handleChecked = this.handleChecked.bind(this);
+        this.progress = this.progress.bind(this);
     
+    }
+
+    progress(){
+        //console.log();
+        let comp = this.state.completed;
+        this.setState({ completed : comp >= 100 ? 0 : comp + 1});
     }
 
     getCsv(){
@@ -146,7 +160,7 @@ class App extends Component{
     }
 
     getData(komkode,startDate, endDate){ 
-        this.setState((preveState) => ({csvData: []}));
+        this.setState((preveState) => ({csvData: [], loading: true}));
         let that = this;
         let dataUrl = "https://drayton.mapcentia.com/api/v1/sql/ballerup?q=SELECT * FROM cvr.flyt_fad("  
                     + komkode + ",'" + startDate + "','" + endDate + "')&srs=4326";
@@ -158,7 +172,7 @@ class App extends Component{
                 that.setState((preveState) => ({data: res.features}));
                 // console.log(res.features);
                 let csv = res.features.map(feature => feature.properties);
-                that.setState((prevState) => ({csvData: csv}));
+                that.setState((prevState) => ({csvData: csv, loading: false}));
             }
         });
     }
@@ -202,10 +216,15 @@ class App extends Component{
     }
 
     componentDidMount(){
+        //this.timer = setInterval(this.progress, 20);
         let that = this;
         let { komkode, startDate, endDate } = this.state;
         this.getData(komkode, startDate, endDate);
         this.getKommuner();
+    }
+
+    componentWillUnmount(){
+        //clearInterval(this.timer);
     }
 
     handleChange(event, value){
@@ -231,14 +250,15 @@ class App extends Component{
     }
   
     render(){
-        const { value, startDate, endDate, kommuner } = this.state;
+        const { value, startDate, endDate, kommuner, loading } = this.state;
         const locale = 'da';
         const _csvData = this.getCsv();
         return (
             <MuiThemeProvider theme={theme}>
             
                 <div className='app'>
-                    <div>
+                    <div className={this.state.loading ? 'loading':''}></div>
+                    <div className=''>
                         <AppBar position="static" color="default">
                             <Toolbar>
                                 <Grid container spacing={24}>
@@ -293,6 +313,7 @@ class App extends Component{
                                     </Grid>
                                     
                                     <Grid item xs={2}>
+                                           
                                         {
                                             this.state.csvData.length > 0 &&
                                              (<CSVLink 
@@ -311,6 +332,7 @@ class App extends Component{
                                 </Grid>
                             </Toolbar>
                         </AppBar>
+                                        
                             <Tabs 
                                 value={value} 
                                 onChange={this.handleChange}
@@ -378,9 +400,9 @@ class App extends Component{
 }
 /*
 
-
+{loading && <CircularProgress size={50} value={this.state.completed} color="primary" variant="determinate" className={classnames.progress} />} 
 */
-export default hot(module)(App);
+export default hot(module)(withStyles(styles)(App));
 
 /*
 TODO: 

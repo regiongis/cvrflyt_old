@@ -5,7 +5,9 @@ import {
     IntegratedSorting,
     FilteringState,
     IntegratedFiltering,
-    DataTypeProvider
+    DataTypeProvider,
+    GroupingState,
+    IntegratedGrouping
   } from '@devexpress/dx-react-grid';
 import { 
     Grid, 
@@ -14,7 +16,11 @@ import {
     TableHeaderRow,
     TableFilterRow,
     TableColumnReordering,
-    TableColumnResizing
+    TableColumnResizing,
+    TableGroupRow,
+    GroupingPanel,
+    DragDropProvider,
+    Toolbar
     } from '@devexpress/dx-react-grid-material-ui';
 import axios from 'axios';
 
@@ -33,14 +39,30 @@ const StatusFormatter = ({value}) =>{
             {value}
         </b>
     );
-}
+};
+
 
 const StatusTypeProvider = props => (
     <DataTypeProvider 
-        formatterComponent={StatusFormatter}
+    formatterComponent={StatusFormatter}
+    {...props}
+    />
+    );
+
+const PnummerFormatter = ({value}) => { console.log('reach pnummer =>', value);
+    let link = `https://datacvr.virk.dk/data/visenhed?enhedstype=produktionsenhed&id=${value}`;
+    return (
+        <a href={link} target='_blank'>{value}</a>
+    );
+};
+
+const PnummerProvider = props => (
+    <DataTypeProvider  
+        formatterComponent={PnummerFormatter}
         {...props}
     />
 );
+
 const HighlightedCell = ({ value, style }) => {
     let color = getColor(value);
    return (<Table.Cell
@@ -73,9 +95,12 @@ class GridData extends React.PureComponent{
             rows: [],
             data: [],
             sorting: [{ columnName: 'hovedbranche', direction: 'desc' }],
-            statusColumns: ['status']
+            statusColumns: ['status'],
+            pcols: ['p-nummer'],
+            grouping: [{ columnName: 'status'}]
         };
         this.changeSorting = sorting => this.setState({ sorting });
+        this.changeGrouping = grouping => this.setState({ grouping });
     }
 
     componentDidMount(){
@@ -124,7 +149,8 @@ class GridData extends React.PureComponent{
         ];
 
 
-        const { sorting, statusColumns } = this.state;
+        const { sorting, statusColumns, grouping, pcols } = this.state;
+        const pc = this.state.pcols; console.log(pc);
         const rows = this.props.data.map((feature, index) => {
             feature.properties['keyIndex'] = index;
             return feature.properties;
@@ -147,6 +173,9 @@ class GridData extends React.PureComponent{
                 <StatusTypeProvider 
                     for={statusColumns}
                 />
+                <PnummerProvider 
+                    for={pc}
+                />
                 <VirtualTable
                     height="auto"
                 />
@@ -160,5 +189,21 @@ class GridData extends React.PureComponent{
       )   
     }
 }
+/*
 
+                <FilteringState defaultFilters={[]} />
+                <IntegratedFiltering />
+                <SortingState defaultSorting={[{ columnName: 'status', direction: 'desc' }]} />
+                <IntegratedSorting />
+                <StatusTypeProvider 
+                    for={statusColumns}
+                />
+                <VirtualTable
+                    height="auto"
+                />
+                <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
+                <TableHeaderRow showSortingControls />
+                <TableFilterRow />
+
+*/
 export default GridData

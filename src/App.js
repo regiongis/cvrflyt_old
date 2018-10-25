@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import IconButton from '@material-ui/core/IconButton';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -29,11 +30,15 @@ import {hot} from 'react-hot-loader';
 import MapData from './Map.js';
 import GridData from './Grid.js';
 import GraphData from './Graph.js';
-import { CSVLink } from 'react-csv';
 import './App.css';
 import classnames from 'classnames';
+import ReactExport from 'react-data-export';
 
 moment.locale('da');
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 
 const styles = theme => ({
@@ -247,7 +252,7 @@ class App extends Component{
     }
   
     render(){
-        const { value, startDate, endDate, kommuner, loading } = this.state;
+        const { value, startDate, endDate, kommuner, loading,komkode } = this.state;
         const locale = 'da';
         const _csvData = this.getCsv();
         return (
@@ -311,16 +316,36 @@ class App extends Component{
                                     
                                     <Grid item xs={2}>
                                            
+                                        
                                         {
                                             this.state.csvData.length > 0 &&
-                                             (<CSVLink 
-                                                    data={this.state.csvData}
-                                                    filename={"my-file.csv"}
-                                                    target="_blank"
+                                            (
+                                                <ExcelFile 
+                                                element={
+                                                    <IconButton arial-label="Excel">
+                                                        <CloudDownload />
+                                                    </IconButton>
+                                                }
+                                                filename={'export_'+ komkode + '_' + startDate + '_' + endDate}
                                                 >
-                                                <CloudDownload/>
-                                                </CSVLink>)    
-
+                                                <ExcelSheet data={this.state.csvData} name="CVR">
+                                                    <ExcelColumn label="Status" value="status"/>
+                                                    <ExcelColumn label="CVR nummer" value="cvr-nummer"/>
+                                                    <ExcelColumn label="P nummer" value="p-nummer"/>
+                                                    <ExcelColumn label="Branche" value="hovedbranche"/>
+                                                    <ExcelColumn label="Virksomhedsnavn" value="navn"/>
+                                                    <ExcelColumn label="Kontaktperson" value="fuldt ansvarlige deltagere"/>
+                                                    <ExcelColumn label="Kommunekode" value="kommunekode"/>
+                                                    <ExcelColumn label="vejnavn" value="vejnavn"/>
+                                                    <ExcelColumn label="Husnummer" value="husnummer"/>
+                                                    <ExcelColumn label="Postnummer" value="postnummer"/>
+                                                    <ExcelColumn label="By" value="postdistrikt"/>
+                                                    <ExcelColumn label="Email" value="emailadresse"/>
+                                                    <ExcelColumn label="Indlæst dato" value="indlæst dato"/>
+                                                </ExcelSheet>
+                                                
+                                            </ExcelFile>
+                                            )
                                         }
                                        
                                           

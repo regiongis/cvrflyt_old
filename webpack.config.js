@@ -19,6 +19,18 @@ module.exports = {
         ]
     },
     resolve: { extensions: ['*', '.js', '.jsx']},
+    node: {fs: 'empty'},
+    externals:[{
+        '../xlsx': 'var _XLSX',
+            
+        },
+        {
+            './jszip': 'jszip'
+        },
+        {
+            './cptable': ' var cptable'
+        }
+    ],
     output: {
         path: path.resolve(__dirname, "dist/"),
         publicPath: "/dist/",

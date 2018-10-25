@@ -32,13 +32,13 @@ const getSummaryPerCategory = (data) => {
     ophoert: _data.filter(x => x.status === 'Ophørt'),
     nystartet: _data.filter(x => x.status === 'Nystartet')
   }; 
-  for(let key in summary){ console.log('key in summary =>', key);
+  for(let key in summary){ 
     let elem = summary[key];
     elem.forEach(category => {// console.log('category name =>', category);
       let k = category.hovedbranche;
-      if(k in stats[key]){ console.log('key => ', k);
+      if(k in stats[key]){ 
         stats[key][k] = stats[key][k] + 1;
-      }else{  console.log('key not found => ', k);
+      }else{  
         stats[key][k] = 1;
       }
     });
@@ -51,7 +51,7 @@ const getBrancheData = (data) => {
   _data.forEach(element => {
     let key = element.hovedbranche;
     //(key in stats) ? stats[key] = stats[key] + 1 : stats[key] = 0;
-    if(key in stats){ console.log(key);
+    if(key in stats){
       stats[key] = stats[key] + 1;
     }else{
       stats[key] = 0;
@@ -85,7 +85,7 @@ class GraphData extends React.Component {
 
       let catData = getSummaryData(this.props.data);
       let sumData = getSummaryPerCategory(this.props.data);
-      console.log(sumData);
+      
   
       return (
         <div>

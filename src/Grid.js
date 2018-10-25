@@ -42,7 +42,7 @@ const StatusTypeProvider = props => (
     />
 );
 const HighlightedCell = ({ value, style }) => {
-    let color = getColor(value); console.log(color);
+    let color = getColor(value);
    return (<Table.Cell
         style={{
             backgroundColor: color, 
@@ -130,7 +130,7 @@ class GridData extends React.PureComponent{
             return feature.properties;
         
         });
-        console.log(rows);
+        
        // console.log(rows);
       return(
           <Paper style={{height: '600px'}}>

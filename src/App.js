@@ -127,13 +127,12 @@ class App extends Component{
             return feature.properties;
         
         });
-        console.log(csv);
         return csv;
     }
 
     
 
-    filterData(feature){console.log(feature);
+    filterData(feature){
         const {data, Fraflytter, Tilflytter, Ophørt, Nystartet }= this.state;
         const checked = [];
         if(Fraflytter) checked.push('Fraflytter');
@@ -187,7 +186,7 @@ class App extends Component{
             Nystartet  = this.state.Nystartet;
         } );    
                
-        console.log(event.target.value,' = ', event.target.checked);
+       
         const _checked = [];
         if(Fraflytter) _checked.push('Fraflytter');
         if(Tilflytter) _checked.push('Tilflytter');
@@ -198,9 +197,8 @@ class App extends Component{
             // console.log(feature.properties.status);
             return _checked.indexOf(feature.properties.status) > -1;
         });
-        console.log(_checked);
-        //console.log(newData);
-        console.log('call setstate');
+      
+      
         this.setState({data: newData});
 
         
@@ -208,7 +206,6 @@ class App extends Component{
     }
     handleSelect(event){ 
         event.persist();
-        console.log(event.target.value);
         let kom = event.target.value;
         let {startDate, endDate} = this.state;
         this.setState((prevState) => ({komkode : event.target.value}));

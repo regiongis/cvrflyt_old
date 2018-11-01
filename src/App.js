@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -360,9 +361,29 @@ class App extends Component{
                                 onChange={this.handleChange}
                                 centered
                                 >
-                                <Tab icon={<Map/>}/>
-                                <Tab icon={<TableChart/>}/>
-                                <Tab icon={<BarChart/>}/>
+                                <Tab icon={
+                                    <Tooltip title="Kort">
+                                    <IconButton aria-label="Kort">
+                                        <Map/>
+                                    </IconButton>
+                                  </Tooltip>
+                                } />
+                                <Tab icon={
+                                    <Tooltip title="Tabel">
+                                    <IconButton aria-label="Tabel">
+                                        <TableChart/>
+                                    </IconButton>
+                                  </Tooltip>
+                                
+                                } />
+                                <Tab icon={
+                                    <Tooltip title="Grapher">
+                                    <IconButton aria-label="Grapher">
+                                        <BarChart/>
+                                    </IconButton>
+                                  </Tooltip>
+                                
+                                } />
                             </Tabs>
                         {value === 0 && <TabContainer><MapData data={this.state.data}/></TabContainer>} 
                         {value === 1 && <TabContainer><GridData data={this.state.data} /></TabContainer>}

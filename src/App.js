@@ -93,8 +93,8 @@ class App extends Component{
         super(props);
         this.state = {
             value: 0,
-            startDate: moment().format('Y')+'-'+ moment().format('M') + '-01',
-            endDate: moment().format('YYYY-MM-DD'),
+            startDate: moment().subtract(1,'months').startOf('month').format('YYYY-MM-DD'),
+            endDate: moment().subtract(1,'months').endOf('month').format('YYYY-MM-DD'),
             data: [],
             filteredData: [],
             kommuner: [],

@@ -62,6 +62,9 @@ class MapData extends React.Component {
         });
       }
 
+      if (geojsonLayer != undefined ) {
+        map.removeLayer(geojsonLayer);
+      }
 
       function onEachFeature(feature, layer) { 
         layer.bindPopup("<strong>" + feature.properties.status + '</strong></br><hr>' + feature.properties.navn + '</br><a href="https://datacvr.virk.dk/data/visenhed?enhedstype=produktionsenhed&id=' + feature.properties["p-nummer"] + '" target="_blank">Se mere her</a>');
